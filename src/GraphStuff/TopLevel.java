@@ -5,16 +5,7 @@
  * 
  * Rework TopLevel to take in command line arguments
  * 
- * Rework TrimRunnable into something that uses the ParallelizationSupport package.
- *  - lots of work.
- *      FWBW.trim() stays mostly the same.
- *      FWBW.trimAux now uses ParallelizationSupport package.
- *      Both the above methods still take a <T extends Trimmer> parameter.
- *      Trimmer is still an abstract class, but implements ElementProcessor
- *          instead of Runnable. It is probably best to move the void setup() 
- *          method into the abstract class. That saves copying that method into
- *          every ElementProcessor.
- *      Change ElementProcessor into an interface. Get rid of threadId. 
+ * 
  * 
  * TrimRunnable needs a smaller rework regardless.
  * It needs the grabWhenever, or nPerGrab logic.
@@ -39,6 +30,17 @@
  *
  * 
  * Below is done
+ * 
+ * Rework TrimRunnable into something that uses the ParallelizationSupport package.
+ *  - lots of work.
+ *      FWBW.trim() stays mostly the same.
+ *      FWBW.trimAux now uses ParallelizationSupport package.
+ *      Both the above methods still take a <T extends Trimmer> parameter.
+ *      Trimmer is still an abstract class, but implements ElementProcessor
+ *          instead of Runnable. It is probably best to move the void setup() 
+ *          method into the abstract class. That saves copying that method into
+ *          every ElementProcessor.
+ *      Change ElementProcessor into an interface. Get rid of threadId. 
  * 
  * Fix race condition in Hong TrimTwoRunnable that causes two threads to output
  * the same size 2 element. (It gets output once too much)
@@ -92,6 +94,7 @@ import GraphStuff.Hong.Hong;
 import GraphStuff.Probability.BucketBonus;
 import GraphStuff.Probability.NestedBuckets;
 import GraphStuff.Probability.StackingNestedBuckets;
+import GraphStuff.Probability.LinearStackingNestedBuckets;
 import GraphStuff.Probability.NormallyDistributedBonus;
 import java.util.HashMap;
 import java.util.Set;
@@ -111,42 +114,44 @@ public class TopLevel {
     final static boolean PRINTSCCELEMENTS = false;
     
     public static void main(String[] args) throws Exception{
-        final boolean GENERATEFILE = false;
+        final boolean GENERATEFILE = true;
         final boolean LOADGRAPH = true;
         // 1: FWBW, 2: MultiStep, 3: Hong, other: none
-        final int algorithmSelectorSwitch = 1;
+        final int algorithmSelectorSwitch = 2;
         
         
         // command line arguments
-        final int N = 50000;
-        final double P = 0.0/N; // Base chance for an edge to exist
+        final int N = 30000;
+        final double P = 0/N; // Base chance for an edge to exist. Keep at 0 when using LinearRampBonus. This stacks very quickly and explodes.
         
         final ProbabilityBonusFunction bucket = new BucketBonus(N, 10.0, 20);
         final ProbabilityBonusFunction gaussian = new NormallyDistributedBonus(N, 0.5);
         
-        ProbabilityBonusFunction nestedBuckets, stackingNestedBuckets;
-        final double[] magnitudes = {1.5, 1.3, 1.1};
-        int[] bucketDefinition = {100, 100, 100};
+        ProbabilityBonusFunction nestedBuckets, stackingNestedBuckets, linearStackingNestedBuckets;
+        final double[] magnitudes = {15.0, 4.0};
+        int[] bucketDefinition = {30, 5};
         nestedBuckets = new NestedBuckets(N, bucketDefinition, magnitudes);
         stackingNestedBuckets = new StackingNestedBuckets(N, bucketDefinition, magnitudes);
+        linearStackingNestedBuckets = new LinearStackingNestedBuckets(N, bucketDefinition, magnitudes);
         //if(AUTOMATICBUCKETING) autoAssignBuckets(N, nestedBuckets, bucketDefinition, magnitudes);
         
-        final ProbabilityBonusFunction linear = new LinearRampBonus(N, 0.05, 1);
+        final ProbabilityBonusFunction linear = new LinearRampBonus(N, 0.05, 0);
         
         // Choose what bonuses to activate
         final ProbabilityBonusFunction[] bonuses = {
             //bucket
             //,nestedBuckets
-            stackingNestedBuckets
-            ,linear
+            linearStackingNestedBuckets
+            //stackingNestedBuckets // this
+            //,linear               // and this, make nice graphs.
         };
         
         //final String tgtFile = "PrettyGraph.txt";
         //final String tgtFile = "SmoothCurve.txt";
         //final String tgtFile = "BigSCC50kvert.txt";
         //final String tgtFile = "7scc50kvert.txt";
-        final String tgtFile = "HongGraph.txt";
-        //final String tgtFile = "graph.txt";
+        //final String tgtFile = "HongGraph.txt";
+        final String tgtFile = "graph.txt";
         final int nThreads = 8;
         final int fileGenerationThreads = 7;
         // end arguments
@@ -200,7 +205,7 @@ public class TopLevel {
     }
     
     static void postReport(long totalDuration){
-        System.out.println("Done.");
+        System.out.println("Done. \n\nPostReport:");
         if(MAINOUTPUT) outputSccs();
         
         int trivialCount;

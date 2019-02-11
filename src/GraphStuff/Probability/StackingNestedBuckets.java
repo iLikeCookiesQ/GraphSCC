@@ -36,8 +36,9 @@ public class StackingNestedBuckets extends NestedBuckets {
                 endVertexBuckets[i] = endVertexBuckets[i-1]%bucketDefinition[i];
             }
             if(startVertexBuckets[i] == endVertexBuckets[i]){
-                returnValue += getModifiedMagnitude(i);
-            } else return returnValue;
+                //returnValue += getModifiedMagnitude(i, getEquivalenceClassModifier(i, startVertexBuckets[i]));
+                returnValue += getModifiedMagnitude(i, getEquivalenceClassModifier(startVertex, endVertex));
+            } //else return returnValue;
         }
         return returnValue;
     }

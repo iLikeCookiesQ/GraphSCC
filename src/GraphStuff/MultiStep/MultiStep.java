@@ -115,7 +115,7 @@ public class MultiStep extends FWBW{
         Set<Integer> sccSet = singleFwBwPass(crowdedVertex); // sets color of SCC vertices to Int_MAX
                                                              // and its out shadow to Int_MAX - 1
         
-        // Update neighborcounts if necessary.
+        // Update neighborcounts in case of doing TopN logic.
         if(topSize > 0){
             if(sccSet.size() > 0.5*oldSize){
                 recountNeighbours(remainingVertices, Integer.MAX_VALUE, false);
@@ -317,7 +317,7 @@ public class MultiStep extends FWBW{
         }
         if(DEBUG8) debugPrint("roots.size(): " + roots.size());
         
-        // TODO: in parallel, start a backwards BFS from each of the roots
+        // Start parallel ColoringSecondPhaseRunnable s to do backwards searches from the roots.
         SoftBarrier sBarrier = new SoftBarrier();
         int extraThreadsGranted = processRequest(FWBW.threadPoolSize/coloringBFSThreadRatio - 1);
         //int extraThreadsGranted = processRequest(1);
@@ -341,6 +341,7 @@ public class MultiStep extends FWBW{
         }
         r.run();
         
+        // Clear the topN set such that later coloring iterations skip over it.
         topN.clear();
     }
     

@@ -29,9 +29,11 @@ public class NestedBuckets implements ProbabilityBonusFunction {
     
     final int N; // graph size
     
-    // precompute division of next 2 fields for runtime efficiency
+    // precompute division for runtime efficiency
     final double oneOverN; 
     final double oneOverNSquared;
+    // Each element is reciprocal of corresponding element in bucketDefinition array
+    final double[] oneOverNBuckets; 
     
     public NestedBuckets(int N, int[] bucketDefinition, double[] magnitudes){
         this.bucketDefinition = bucketDefinition;
@@ -49,6 +51,10 @@ public class NestedBuckets implements ProbabilityBonusFunction {
         this.N = N;
         this.oneOverN = 1/(double)N;
         this.oneOverNSquared = oneOverN*oneOverN;
+        oneOverNBuckets = new double[nestingDepth];
+        for(int i = 0; i < nestingDepth; i++){
+            oneOverNBuckets[i] = 1.0/bucketDefinition[i];
+        }
         
         // calculate divisions once and then use multiplications for efficiency
         //this.oneOverBucketSize = new double[nestingDepth];
@@ -65,7 +71,6 @@ public class NestedBuckets implements ProbabilityBonusFunction {
 
     @Override
     public double get2DepBonus(int startVertex, int endVertex) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         int[] startVertexBuckets = new int[nestingDepth];
         int[] endVertexBuckets = new int[nestingDepth];
         
@@ -80,18 +85,29 @@ public class NestedBuckets implements ProbabilityBonusFunction {
                 endVertexBuckets[i] = endVertexBuckets[i-1]%bucketDefinition[i];
             }
             if(startVertexBuckets[i] == endVertexBuckets[i]){
-                return getModifiedMagnitude(i);
+                return getModifiedMagnitude(i, getEquivalenceClassModifier(i, startVertexBuckets[i]));
             } 
         }
         return 0.0;
     }
     
-    double getModifiedMagnitude(int k){
+    // Method is overridden by extending classes that use this. Always returns 1 in this class.
+    double getEquivalenceClassModifier(int a, int b){
+        return 1.0;
+    }
+    
+    /**
+     * 
+     * @param k: The bucketing level
+     * @param equivalenceClassModifier: double that multiplies the returned value
+     * @return 
+     */
+    double getModifiedMagnitude(int k, double equivalenceClassModifier){
         //return magnitudes[currentBucketDepth]*oneOverN*bucketDefinition[currentBucketDepth]*oneOverBucketSize[currentBucketDepth];
         if(k == 0){
-            return magnitudes[0]*bucketDefinition[0]*oneOverN;
+            return equivalenceClassModifier*magnitudes[0]*bucketDefinition[0]*oneOverN;
         } else {
-            return magnitudes[k]*bucketDefinition[k]*bucketDefinition[k-1]*oneOverNSquared;
+            return equivalenceClassModifier*magnitudes[k]*bucketDefinition[k]*bucketDefinition[k-1]*oneOverNSquared;
         }
     }
 

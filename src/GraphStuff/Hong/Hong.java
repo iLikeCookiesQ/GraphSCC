@@ -160,6 +160,7 @@ public class Hong extends MultiStep{
             G.vertices[i].color = i;
         }
         
+        if(DEBUG7) debugPrint("Starting WCC decomposition..");
         if(HONGDEBUG) System.out.println("before color propagation.");
         // Populate a queue for parallel iteration.
         SplittableSinglyLinkedQueue<Integer> coloringSpace = new SplittableSinglyLinkedQueue();
@@ -186,6 +187,8 @@ public class Hong extends MultiStep{
         
         HashMap<Integer,Set<Integer>> map = new HashMap<>();
         assembleWccSets(map);
+        
+        if(DEBUG7) debugPrint("WCCs found: " + map.keySet().size());
         
         if(HONGDEBUG) System.out.println("after assembleWccSets.");
         
@@ -255,6 +258,11 @@ public class Hong extends MultiStep{
         return sccSet;
     }
     
+    /**
+     * Scans the remaining unassigned vertices post WCC coloring. Then assembles the WCCs
+     * in a Set datastructure. This is needed such that we can supply the data as input to
+     * FW-BW instances.
+     */
     int vertexCol;
     void assembleWccSets(HashMap<Integer, Set<Integer>> map) throws InstantiationException, IllegalAccessException{
         for(int elem: remainingVertices){

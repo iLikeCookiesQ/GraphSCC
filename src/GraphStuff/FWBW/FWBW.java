@@ -58,7 +58,7 @@ public class FWBW {
     public final static Set<Integer> setType = new ConcurrentHashSet(); // decides the set type that will be used wherever sets are used. (many places)
     
     public final static boolean DEBUG = false;
-    public final static boolean DEBUG1 = false; // displays number of trimmed vertices each invocation of the trim() method
+    public final static boolean DEBUG1 = true; // displays number of trimmed vertices each invocation of the trim() method
     public final static boolean DEBUG2 = false;
     public final static boolean DEBUG3 = false;
     public final static boolean DEBUG4 = false; // displays number of trimmed vertices each trim iteration
@@ -126,12 +126,12 @@ public class FWBW {
         
         outputSCC(sccSet);
         
-        /* old code, no longer in use. TrimRunnable now recounts neighbors on the spot.
         
         // Depending on the size of the SCC versus the size of the rest,
         // Either update the neighbour counts of vertices by iterating over the
         // SCC, or by fully recounting the amount of neighbors for the non SCC
-        // vertices
+        // vertices. Recounting the neighborcounts is necessary for the trimming
+        // steps in recursive calls to remove any vertices.
         if(sccSet.size() > (0.5*oldSize)){
         //if(sccSet.size() > (searchSpace.size() + fwdSet.size() + bwdSet.size())){
             //debugPrint("Large SCC");
@@ -143,7 +143,8 @@ public class FWBW {
             
             //recountNeighbours(searchSpace, srchSpaceCol);
         } else {
-            updateSccNeighbors(sccSet, fwdCol, bwdCol);
+            //updateSccNeighbors(sccSet, fwdCol, bwdCol);
+            updateSccNeighbors(sccSet, sccSet.size());
         }//*/
         
         
@@ -494,7 +495,7 @@ public class FWBW {
         for(int i = 0; i < extraThreadsGranted; i++) checkOutThread();
     }
     
-    // updates neighbors of found SCC (set) by decrementing their in or out degrees
+    // Updates neighbors of vertices in a found SCC by decrementing their in or out degrees
     public void updateSccNeighbors(
             Iterable<Integer> iterable,
             int size

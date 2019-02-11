@@ -83,7 +83,7 @@ public class TrimTwoProcessor extends IterativeTrimProcessor{
                     break;
                 }
             }
-            if(MultiStep.DEBUG7) if(otherVertex == -1) FWBW.debugPrint("otherVertex == -1");
+            if(MultiStep.DEBUG3) if(otherVertex == -1) FWBW.debugPrint("otherVertex == -1");
             connectsBack = false;
             for(int parent: auxVertex.inNeighbours){
                 if(parent == otherVertex) connectsBack = true;
@@ -112,7 +112,7 @@ public class TrimTwoProcessor extends IterativeTrimProcessor{
                     break;
                 }
             }
-            if(MultiStep.DEBUG7) if(otherVertex == -1) FWBW.debugPrint("otherVertex == -1");
+            if(MultiStep.DEBUG3) if(otherVertex == -1) FWBW.debugPrint("otherVertex == -1");
             connectsBack = false;
             for(int child: auxVertex.outNeighbours){
                 if(child == otherVertex) connectsBack = true;

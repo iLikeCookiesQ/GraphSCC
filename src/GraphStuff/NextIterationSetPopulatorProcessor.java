@@ -11,7 +11,9 @@ import DataStructures.Vertex;
 import java.util.Set;
 
 /**
- *
+ * At the end of a trimming iteration, populate the set for the next iteration.
+ * This class parallelizes that process, as well as decrements the neighborcounts
+ * of neighbors of trimmed vertices.
  * @author Benjamin
  */
 public class NextIterationSetPopulatorProcessor implements ElementProcessor<Integer>{

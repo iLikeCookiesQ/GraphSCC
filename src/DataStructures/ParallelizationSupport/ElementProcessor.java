@@ -18,6 +18,6 @@ public interface ElementProcessor<T> {
      * that threads write to. The index would then denote that threads local space
      */
     
-    public abstract void processElement(T element);
+    public  void processElement(T element);
     public abstract ElementProcessor<T> clone(int cloneId);
 }

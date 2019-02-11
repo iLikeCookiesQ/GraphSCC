@@ -25,7 +25,7 @@ public class LinearRampBonus implements ProbabilityBonusFunction{
     public LinearRampBonus(int N, double magnitude, int bonusType){
         
         this.magnitude = magnitude;
-        this.bonusType = bonusType; // must be either 1 or 2
+        this.bonusType = bonusType;
         
         this.N = N;
         this.oneOverN = 1/(double)N;
@@ -53,8 +53,18 @@ public class LinearRampBonus implements ProbabilityBonusFunction{
         return magnitude*x*oneOverN;
     }   
 
+    /**
+     * In this mode, the bonus for an edge depends on whichever vertex (start or end)
+     * has the highest vertex identifier. This will give the vertices with a high
+     * vertex identifier both increased chance for out-neighbors as well as increased
+     * chance for in-neighbors.
+     */
+    @Override
+    public double get2DepBonus(int startVertex, int endVertex) {
+        if(startVertex > endVertex) return calculate(startVertex);
+        else return calculate(endVertex);
+    }
+    
     @Override
     public double getInDepBonus() {throw new UnsupportedOperationException("Not supported");}
-    @Override
-    public double get2DepBonus(int startVertex, int endVertex) {throw new UnsupportedOperationException("Not supported");}
 }

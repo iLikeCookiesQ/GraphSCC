@@ -49,7 +49,7 @@ public class IterativeTrimProcessor extends Trimmer {
             countOnTheFly, seek);
     }
     
-    public IterativeTrimProcessor(
+    private IterativeTrimProcessor(
             Graph G, 
             Set<Integer> searchSpace, 
             SplittableSinglyLinkedQueue<Integer> trimmedSet,

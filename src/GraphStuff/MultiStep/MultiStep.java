@@ -130,6 +130,8 @@ public class MultiStep extends FWBW{
             coloring();
         }
         
+        if(DEBUG7) debugPrint("Beginning Tarjan, remainingVertices: " + remainingVertices.size());
+        
         // Set color of remaining vertices back to 0 for the Tarjan algorithm
         // to recognize what should be processed.
         for(int elem: remainingVertices) G.vertices[elem].color = 0;

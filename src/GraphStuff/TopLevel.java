@@ -114,7 +114,7 @@ public class TopLevel {
     final static boolean PRINTSCCELEMENTS = false;
     
     public static void main(String[] args) throws Exception{
-        final boolean GENERATEFILE = true;
+        final boolean GENERATEFILE = false;
         final boolean LOADGRAPH = true;
         // 1: FWBW, 2: MultiStep, 3: Hong, other: none
         final int algorithmSelectorSwitch = 2;
@@ -128,8 +128,8 @@ public class TopLevel {
         final ProbabilityBonusFunction gaussian = new NormallyDistributedBonus(N, 0.5);
         
         ProbabilityBonusFunction nestedBuckets, stackingNestedBuckets, linearStackingNestedBuckets;
-        final double[] magnitudes = {15.0, 4.0};
-        int[] bucketDefinition = {30, 5};
+        final double[] magnitudes = {3.5, 5.0, 17.5};
+        int[] bucketDefinition = {50, 20, 1};
         nestedBuckets = new NestedBuckets(N, bucketDefinition, magnitudes);
         stackingNestedBuckets = new StackingNestedBuckets(N, bucketDefinition, magnitudes);
         linearStackingNestedBuckets = new LinearStackingNestedBuckets(N, bucketDefinition, magnitudes);
